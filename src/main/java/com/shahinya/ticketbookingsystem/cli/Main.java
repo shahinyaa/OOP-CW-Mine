@@ -6,7 +6,6 @@ public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
-        // Take inputs from the user for configuration
         System.out.print("Enter total number of tickets: ");
         int totalTickets = scanner.nextInt();
 
@@ -37,10 +36,8 @@ public class Main {
         System.out.print("Enter quantity of tickets each customer will buy: ");
         int customerTicketQuantity = scanner.nextInt();
 
-        // Create a ticket pool with the max capacity
         TicketPool ticketPool = new TicketPool(maxCapacity, totalTickets);
 
-        // Create vendor threads
         Thread[] vendorThreads = new Thread[vendorCount];
         for (int i = 0; i < vendorCount; i++) {
             Vendor vendor = new Vendor(i + 1, ticketReleaseRateSeconds, ticketPool, vendorCount);
@@ -48,7 +45,6 @@ public class Main {
             vendorThreads[i].start();
         }
 
-        // Create customer threads
         Thread[] customerThreads = new Thread[customerCount];
         for (int i = 0; i < customerCount; i++) {
             Customer customer = new Customer(i + 1, ticketPool, customerRetrievalRateSeconds, customerTicketQuantity);
@@ -56,7 +52,6 @@ public class Main {
             customerThreads[i].start();
         }
 
-        // Wait for all vendor and customer threads to finish
         try {
             for (Thread vendorThread : vendorThreads) {
                 vendorThread.join();
@@ -70,6 +65,5 @@ public class Main {
         }
 
         scanner.close();
-        System.exit(0);
     }
 }

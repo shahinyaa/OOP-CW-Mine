@@ -21,14 +21,28 @@ public class Ticket {
         return ticketId;
     }
 
+    public String getEventName() {
+        return eventName;
+    }
+
+    public BigDecimal getTicketPrice() {
+        return ticketPrice;
+    }
+
+    public String getEventDate() {
+        return eventDate;
+    }
+
+    public String getEventTime() {
+        return eventTime;
+    }
+
     @Override
     public String toString() {
-        return "Ticket Details:\n" +
-                "Ticket ID: " + ticketId + "\n" +
-                "Event Name: " + eventName + "\n" +
-                "Price: $" + ticketPrice + "\n" +
-                "Event Date: " + eventDate + "\n" +
+        return "Ticket ID: " + ticketId + ", " +
+                "Event Name: " + eventName + ", " +
+                "Price: $" + ticketPrice + ", " +
+                "Event Date: " + eventDate + ", " +
                 "Event Time: " + eventTime;
     }
 }
-
