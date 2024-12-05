@@ -63,8 +63,6 @@ public class Main {
         } catch (InterruptedException e) {
             System.out.println("System interrupted!");
         }
-        System.out.println("");
-        System.out.println("");
 
         scanner.close();
     }
