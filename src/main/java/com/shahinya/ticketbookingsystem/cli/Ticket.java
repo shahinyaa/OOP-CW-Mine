@@ -41,7 +41,7 @@ public class Ticket {
     public String toString() {
         return "Ticket ID: " + ticketId + ", " +
                 "Event Name: " + eventName + ", " +
-                "Price: $" + ticketPrice + ", " +
+                "Price: Rs." + ticketPrice + ", " +
                 "Event Date: " + eventDate + ", " +
                 "Event Time: " + eventTime;
     }

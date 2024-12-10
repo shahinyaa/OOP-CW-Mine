@@ -11,12 +11,14 @@ public class Vendor implements Runnable {
     private final int ticketReleaseRate;
     private final TicketPool ticketPool;
     private final int totalVendors;
+    private String eventName;
 
-    public Vendor(int vendorId, int ticketReleaseRate, TicketPool ticketPool, int totalVendors) {
+    public Vendor(int vendorId, int ticketReleaseRate, TicketPool ticketPool, int totalVendors, String eventName) {
         this.vendorId = vendorId;
         this.ticketReleaseRate = ticketReleaseRate;
         this.ticketPool = ticketPool;
         this.totalVendors = totalVendors;
+        this.eventName = eventName;
     }
 
     @Override
@@ -35,7 +37,7 @@ public class Vendor implements Runnable {
                         break;
                     }
 
-                    Ticket ticket = new Ticket(ticketIdCounter, "Simple Event", new BigDecimal("1000"), "2024-12-04", "18:00");
+                    Ticket ticket = new Ticket(ticketIdCounter,eventName, new BigDecimal("2500"), "2024-12-25", "16:30");
                     ticketPool.addTicket(ticket);
                     System.out.println("Vendor-" + vendorId + " added Ticket-" + ticket.getTicketId());
 

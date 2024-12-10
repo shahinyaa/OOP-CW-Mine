@@ -7,10 +7,12 @@ public class TicketPool {
     private final Queue<Ticket> tickets = new LinkedList<>();
     private final int maxCapacity;
     private final int totalTickets;
+    private final String eventName;
 
-    public TicketPool(int maxCapacity, int totalTickets) {
+    public TicketPool(int maxCapacity, int totalTickets, String eventName) {
         this.maxCapacity = maxCapacity;
         this.totalTickets = totalTickets;
+        this.eventName = eventName;
     }
 
     public synchronized void addTicket(Ticket ticket) throws InterruptedException {

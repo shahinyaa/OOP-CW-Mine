@@ -6,6 +6,70 @@ public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
+        // Check if the user wants to load the last configuration
+        BookingConfig config;
+        System.out.print("Would you like to load the last configuration? (yes/no): ");
+        if (scanner.nextLine().equalsIgnoreCase("yes")) {
+            config = BookingConfigManager.loadConfig();
+            if (config != null) {
+                System.out.println("Configuration loaded successfully:");
+                System.out.println("Event Name: " + config.getEventName());
+                System.out.println("Total Tickets: " + config.getTotalTickets());
+                System.out.println("Max Capacity: " + config.getMaxCapacity());
+                System.out.println("Ticket Release Rate (seconds): " + config.getTicketReleaseRateSeconds());
+                System.out.println("Vendor Count: " + config.getVendorCount());
+                System.out.println("Customer Count: " + config.getCustomerCount());
+                System.out.println("Customer Retrieval Rate (seconds): " + config.getCustomerRetrievalRateSeconds());
+                System.out.println("Customer Ticket Quantity: " + config.getCustomerTicketQuantity());
+            } else {
+                System.out.println("No configuration file found. Continuing with new configuration.");
+                config = getNewConfig(scanner);
+                BookingConfigManager.saveConfig(config);
+            }
+        } else {
+            config = getNewConfig(scanner);
+            BookingConfigManager.saveConfig(config);
+        }
+
+        // Initialize the ticket pool
+        TicketPool ticketPool = new TicketPool(config.getMaxCapacity(), config.getTotalTickets(), config.getEventName());
+
+        // Create and start vendor threads
+        Thread[] vendorThreads = new Thread[config.getVendorCount()];
+        for (int i = 0; i < config.getVendorCount(); i++) {
+            Vendor vendor = new Vendor(i + 1, config.getTicketReleaseRateSeconds(), ticketPool, config.getVendorCount(), config.getEventName());
+            vendorThreads[i] = new Thread(vendor, "Vendor-" + (i + 1));
+            vendorThreads[i].start();
+        }
+
+        // Create and start customer threads
+        Thread[] customerThreads = new Thread[config.getCustomerCount()];
+        for (int i = 0; i < config.getCustomerCount(); i++) {
+            Customer customer = new Customer(i + 1, ticketPool, config.getCustomerRetrievalRateSeconds(), config.getCustomerTicketQuantity());
+            customerThreads[i] = new Thread(customer, "Customer-" + (i + 1));
+            customerThreads[i].start();
+        }
+
+        // Wait for all threads to complete
+        try {
+            for (Thread vendorThread : vendorThreads) {
+                vendorThread.join();
+            }
+            for (Thread customerThread : customerThreads) {
+                customerThread.join();
+            }
+            System.out.println("All tickets sold. System shutting down...");
+        } catch (InterruptedException e) {
+            System.out.println("System interrupted!");
+        }
+
+        scanner.close();
+    }
+
+    private static BookingConfig getNewConfig(Scanner scanner) {
+        System.out.println("Enter your Event name to be hosted: ");
+        String eventName = scanner.nextLine();
+
         // Input for total tickets with error handling
         int totalTickets;
         while (true) {
@@ -121,38 +185,9 @@ public class Main {
             }
         }
 
-        // Initialize the ticket pool
-        TicketPool ticketPool = new TicketPool(maxCapacity, totalTickets);
+        System.out.println();
 
-        // Create and start vendor threads
-        Thread[] vendorThreads = new Thread[vendorCount];
-        for (int i = 0; i < vendorCount; i++) {
-            Vendor vendor = new Vendor(i + 1, ticketReleaseRateSeconds, ticketPool, vendorCount);
-            vendorThreads[i] = new Thread(vendor, "Vendor-" + (i + 1));
-            vendorThreads[i].start();
-        }
-
-        // Create and start customer threads
-        Thread[] customerThreads = new Thread[customerCount];
-        for (int i = 0; i < customerCount; i++) {
-            Customer customer = new Customer(i + 1, ticketPool, customerRetrievalRateSeconds, customerTicketQuantity);
-            customerThreads[i] = new Thread(customer, "Customer-" + (i + 1));
-            customerThreads[i].start();
-        }
-
-        // Wait for all threads to complete
-        try {
-            for (Thread vendorThread : vendorThreads) {
-                vendorThread.join();
-            }
-            for (Thread customerThread : customerThreads) {
-                customerThread.join();
-            }
-            System.out.println("All tickets sold. System shutting down...");
-        } catch (InterruptedException e) {
-            System.out.println("System interrupted!");
-        }
-
-        scanner.close();
+        return new BookingConfig(eventName, totalTickets, maxCapacity, ticketReleaseRateSeconds,
+                vendorCount, customerCount, customerRetrievalRateSeconds, customerTicketQuantity);
     }
 }

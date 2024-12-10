@@ -18,6 +18,7 @@ public class Customer implements Runnable {
         for (int i = 0; i < quantity; i++) {
             try {
                 // Wait for the retrieval rate before attempting to buy a ticket
+
                 Thread.sleep(customerRetrievalRate * 1000);
 
                 synchronized (ticketPool) {
